@@ -7,11 +7,22 @@ classDiagram
     class Event {
         +String id
         +String ownerId
+        +VisibilityLevel visibility
+        +LifecycleStatus status
+        +Int latestVersion
+        +String clonedFromEventVersionId
+    }
+
+    class EventVersion {
+        +String id
+        +String eventId
+        +Int versionNumber
         +String title
         +String content
         +TimeRepresentation time
         +MediaAttachment[] media
         +String[] tags
+        +Timestamp createdAt
     }
 
     class Timeline {
@@ -20,6 +31,7 @@ classDiagram
         +String title
         +String content
         +VisibilityLevel visibility
+        +LifecycleStatus status
     }
 
     class TimelineEventLink {
@@ -30,6 +42,7 @@ classDiagram
         +String sectionCategory
     }
 
+    Event "1" *-- "1..*" EventVersion : versions
     Event "1" --* "0..*" TimelineEventLink : attached to
     Timeline "1" --* "0..*" TimelineEventLink : contains
 ```
@@ -38,22 +51,37 @@ classDiagram
 
 ## 1. Events
 
-An **Event** is a standalone, immutable historical or scientific fact. It represents something that happened at a specific point in time or over a specific duration.
+An **Event** represents something that happened at a specific point in time or over a specific duration. Conceptually, an Event consists of a stable identity envelope (ownership, visibility, lifecycle state) paired with an append-only history of immutable **Event Versions**.
 
 ### Attributes
-- **ID**: A globally unique identifier.
-- **Title**: A short, descriptive name (e.g., "First Moon Landing").
-- **Content**: Detailed rich-text narrative.
-- **Time/Duration**: The temporal coordinate (see [Time and Scale Model](02_time_and_scale.md)).
-- **Media**: A collection of high-resolution images, videos, audio clips, or document attachments.
-- **Tags/Metadata**: Labels used for categorization (e.g., `#spaceflight`, `#cold-war`, `#geology`).
-- **Owner/Creator**: The user or organization that created the event.
+- **ID**: A globally unique identifier for the event identity.
+- **Owner/Creator**: The user or organization that owns the event.
+- **Visibility**: Controls who can view or reference the event (`Private`, `Shared`, `Org-Only`, `Public`).
+- **Lifecycle Status**: Tracks whether the event is `Active` or `Deleted` (soft-deleted/archived).
+- **Latest Version**: Points to the current active `EventVersion`.
+- **Version Snapshot Attributes** (stored per `EventVersion`):
+  - **Title**: A short, descriptive name (e.g., "First Moon Landing").
+  - **Content**: Detailed rich-text narrative.
+  - **Time/Duration**: The temporal coordinate (see [Time and Scale Model](02_time_and_scale.md)).
+  - **Media**: A collection of high-resolution images, videos, audio clips, or document attachments.
+  - **Tags/Metadata**: Labels used for categorization (e.g., `#spaceflight`, `#cold-war`, `#geology`).
 
 ### Independent Nature of Events
 Events are **not** hardcoded inside a single timeline. Once an event is created:
 - It exists in the user's global catalog.
 - It can be linked to multiple timelines (e.g., a "History of Computing" timeline and a "Biography of Alan Turing" timeline can both link to the "Turing Machine Paper Published" event).
 - If the event is public or shared, other users can reference it in their own timelines without duplicating the underlying data.
+
+### Versioning and Cloning
+- **Latest-Version Resolution**: Events are versioned on every edit, and a timeline (`TimelineEventLink`) always resolves to the **latest version** of an event.
+- **Restoring Old Versions (Owner)**: If the owner of an event wants to revert to a previous version, they can copy that historical version forward as the new latest version (with dedicated UI support planned for future iterations).
+- **Cloning a Version (Non-Owner)**: If a non-owner wants to use an older version of someone else's event (or fork it to customize it), they can use a "Clone this version" action to copy that specific `EventVersion` into a brand-new `Event` under their own ownership.
+- **Timeline Versioning (Out of Scope for MVP)**: While versioning of timelines themselves (tracking historical changes to `TimelineEventLink` connections) may be supported in the future, it is not required for the MVP.
+
+### Soft-Deletes, Archiving, and Privacy (Tombstones)
+Because events can be linked across timelines owned by different users, lifecycle and privacy changes must not silently corrupt external timelines:
+- **Soft-Delete / Archiving**: When a user deletes an event they own, the system performs a **soft-delete (archive)** rather than a hard delete. The event will not immediately vanish from other users' timelines. Instead, timelines referencing a deleted event can surface an indicator in the UI and allow the timeline owner to **clone** the event into their own account to preserve it.
+- **Marking an Event Private (Tombstone Behavior)**: If an owner marks a previously shared/public event as `Private` (e.g., a personal milestone like the birth of a child that they no longer wish to be public), the event's details must be immediately withheld from unauthorized timelines. However, the referencing timeline retains its `TimelineEventLink` and renders a **tombstone placeholder**—informing the timeline owner that an event existed in that slot, but has since been marked private by the event owner.
 
 ---
 
