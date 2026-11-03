@@ -30,6 +30,19 @@ This centralized `./spec` directory contains all high-level product and technica
    - Monorepo directory structure.
    - Extensions to Mobile, VR/AR, and third-party embeds.
 
+6. **[Backend Architecture & Tooling](file:///home/ncronquist/Documents/projects/timelines/spec/06_backend_architecture.md)**
+   - Bun + ElysiaJS + TypeBox + OpenAPI core runtime and HTTP stack.
+   - PostgreSQL + Drizzle ORM (`postgres` driver, `drizzle-typebox`).
+   - Better Auth for self-hosted authentication, social OAuth, organizations, and SSO.
+   - OpenTelemetry + Pino structured logging with `requestId`/`traceId` correlation.
+   - Docker containerization, Biome linting/formatting, and deferred S3/queue strategy.
+
+7. **[Frontend Architecture, Design System & Monorepo](file:///home/ncronquist/Documents/projects/timelines/spec/07_frontend_and_monorepo.md)**
+   - React 19 + Vite + TanStack Router (SPA) + TanStack Query + Elysia Eden Treaty.
+   - Hybrid Canvas2D + Virtualized DOM rendering architecture for the multi-scale timeline canvas.
+   - Tailwind CSS v4 + Radix UI (`shadcn/ui`) + Motion + TipTap + `@dnd-kit` design system.
+   - Bun Workspaces + Turborepo monorepo setup and `/packages/time-engine` temporal math library.
+
 ---
 
-*Note: These documents focus strictly on product specs, user experience, and domain design. Technical implementation details (languages, libraries, database engines) are intentionally excluded and will be decided in later execution phases.*
+*Note: Files `01`–`05` focus on product specs, user experience, and domain design, while `06+` capture technical architecture and tooling decisions.*
