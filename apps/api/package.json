@@ -1,0 +1,42 @@
+{
+  "name": "@timelines/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/app.ts",
+  "types": "./src/app.ts",
+  "exports": {
+    ".": "./src/app.ts"
+  },
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/opentelemetry": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.0",
+    "@opentelemetry/api": "^1.9.0",
+    "@timelines/time-engine": "workspace:*",
+    "@timelines/types": "workspace:*",
+    "better-auth": "^1.2.0",
+    "drizzle-orm": "^0.40.0",
+    "drizzle-typebox": "^0.2.0",
+    "elysia": "^1.2.25",
+    "pino": "^9.6.0",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@timelines/tsconfig": "workspace:*",
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.30.4",
+    "pino-pretty": "^13.0.0",
+    "typescript": "^5.7.3"
+  }
+}
