@@ -1,0 +1,21 @@
+{
+  "name": "@timelines/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.0"
+  },
+  "devDependencies": {
+    "@timelines/tsconfig": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}

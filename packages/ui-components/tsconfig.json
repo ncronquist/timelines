@@ -1,0 +1,4 @@
+{
+  "extends": "@timelines/tsconfig/react.json",
+  "include": ["src/**/*"]
+}
